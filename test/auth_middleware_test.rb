@@ -44,6 +44,21 @@ class AuthMiddlewareTest < Minitest::Test
     assert_equal({ "error" => "Unauthorized" }, JSON.parse(body.join))
   end
 
+  def test_wrong_authorization_scheme_is_rejected
+    auth = Auth.new(username: "admin", password: "secret")
+    next_app = lambda { |_env| flunk "The request should not reach the next app" }
+    middleware = AuthMiddleware.new(next_app, auth: auth)
+    env = {
+      "PATH_INFO" => "/products",
+      "HTTP_AUTHORIZATION" => "Basic credentials"
+    }
+
+    status, _headers, body = middleware.call(env)
+
+    assert_equal 401, status
+    assert_equal({ "error" => "Unauthorized" }, JSON.parse(body.join))
+  end
+
   def test_valid_token_reaches_the_next_app
     auth = Auth.new(username: "admin", password: "secret")
     token = auth.authenticate("admin", "secret")
