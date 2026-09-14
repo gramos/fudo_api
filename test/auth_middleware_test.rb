@@ -6,7 +6,10 @@ class AuthMiddlewareTest < Minitest::Test
   def test_public_route_does_not_require_a_token
     next_app = lambda { |_env| [200, {}, ["public"]] }
     middleware = AuthMiddleware.new(next_app, auth: nil)
-    env = { "PATH_INFO" => "/auth" }
+    env = {
+      "REQUEST_METHOD" => "POST",
+      "PATH_INFO" => "/auth"
+    }
 
     status, _headers, body = middleware.call(env)
 
