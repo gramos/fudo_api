@@ -33,4 +33,10 @@ class AuthTest < Minitest::Test
 
     assert_nil token
   end
+
+  def test_unknown_token_is_not_valid
+    auth = Auth.new(username: "admin", password: "secret")
+
+    assert_nil auth.validate("unknown-token")
+  end
 end
