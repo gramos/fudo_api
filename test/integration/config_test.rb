@@ -3,6 +3,21 @@ require "rack"
 require_relative "../test_helper"
 
 class ConfigTest < Minitest::Test
+  def test_openapi_file_is_public_and_not_cached
+    ENV["AUTH_USERNAME"] = "admin"
+    ENV["AUTH_PASSWORD"] = "secret"
+    app, = Rack::Builder.parse_file("config.ru")
+    env = Rack::MockRequest.env_for("/openapi.yaml", method: "GET")
+
+    status, headers, body = app.call(env)
+    content = +""
+    body.each { |chunk| content << chunk }
+
+    assert_equal 200, status
+    assert_equal "no-store", headers["cache-control"]
+    refute_empty content
+  end
+
   def test_authentication_response_is_compressed_when_requested
     ENV["AUTH_USERNAME"] = "admin"
     ENV["AUTH_PASSWORD"] = "secret"

@@ -9,6 +9,20 @@ auth = Auth.new(
 )
 
 use Rack::Deflater
+
+use Rack::Static,
+    urls: {
+      "/AUTHORS" => "/AUTHORS",
+      "/openapi.yaml" => "/openapi.yaml"
+    },
+    root: File.expand_path("public", __dir__),
+    header_rules: [
+      [%r{\A/AUTHORS\z},
+       { "cache-control" => "public, max-age=86400" }],
+      [%r{\A/openapi\.yaml\z},
+       { "cache-control" => "no-store" }]
+    ]
+
 use AuthMiddleware, auth: auth
 
 run App.new(auth: auth)
