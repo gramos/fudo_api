@@ -3,6 +3,44 @@ require "rack"
 require_relative "../test_helper"
 
 class ConfigTest < Minitest::Test
+  def test_created_product_is_available_after_five_seconds
+    ENV["AUTH_USERNAME"] = "admin"
+    ENV["AUTH_PASSWORD"] = "secret"
+    app, = Rack::Builder.parse_file("config.ru")
+    auth_env = Rack::MockRequest.env_for(
+      "/auth",
+      method: "POST",
+      input: JSON.generate(username: "admin", password: "secret"),
+      "CONTENT_TYPE" => "application/json"
+    )
+    _status, _headers, auth_body = app.call(auth_env)
+    token = JSON.parse(auth_body.join)["token"]
+    create_env = Rack::MockRequest.env_for(
+      "/products",
+      method: "POST",
+      input: JSON.generate(name: "Pizza"),
+      "CONTENT_TYPE" => "application/json",
+      "HTTP_AUTHORIZATION" => "Bearer #{token}"
+    )
+
+    _status, _headers, create_body = app.call(create_env)
+    product_id = JSON.parse(create_body.join)["id"]
+
+    sleep 5.1
+
+    list_env = Rack::MockRequest.env_for(
+      "/products",
+      method: "GET",
+      "HTTP_AUTHORIZATION" => "Bearer #{token}"
+    )
+    _status, _headers, list_body = app.call(list_env)
+
+    assert_includes JSON.parse(list_body.join), {
+      "id" => product_id,
+      "name" => "Pizza"
+    }
+  end
+
   def test_authenticated_client_can_list_products
     ENV["AUTH_USERNAME"] = "admin"
     ENV["AUTH_PASSWORD"] = "secret"
