@@ -47,6 +47,33 @@ class AppTest < Minitest::Test
     assert_equal [], JSON.parse(body.join)
   end
 
+  def test_created_product_becomes_available_after_five_seconds
+    auth = Auth.new(username: "admin", password: "secret")
+    app = App.new(auth: auth)
+    create_env = {
+      "REQUEST_METHOD" => "POST",
+      "PATH_INFO" => "/products",
+      "auth.username" => "admin",
+      "rack.input" => StringIO.new(JSON.generate(name: "Pizza"))
+    }
+    list_env = {
+      "REQUEST_METHOD" => "GET",
+      "PATH_INFO" => "/products",
+      "auth.username" => "admin",
+      "rack.input" => StringIO.new
+    }
+
+    _status, _headers, create_body = app.call(create_env)
+    product_id = JSON.parse(create_body.join)["id"]
+
+    sleep 5.1
+
+    _status, _headers, list_body = app.call(list_env)
+    products = JSON.parse(list_body.join)
+
+    assert_includes products, { "id" => product_id, "name" => "Pizza" }
+  end
+
   def test_authenticates_valid_credentials
     auth = Auth.new(username: "admin", password: "secret")
     app = App.new(auth: auth)

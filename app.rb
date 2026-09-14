@@ -37,9 +37,17 @@ class App
 
   def create_product(env)
     data = JSON.parse(env["rack.input"].read)
-    product_id = SecureRandom.uuid
+    product = {
+      id: SecureRandom.uuid,
+      name: data["name"]
+    }
 
-    json_response(202, id: product_id, name: data["name"], status: "pending")
+    Thread.new do
+      sleep 5
+      @products[product[:id]] = product
+    end
+
+    json_response(202, **product, status: "pending")
   end
 
   def list_products(_env)
