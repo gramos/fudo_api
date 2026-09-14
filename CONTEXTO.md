@@ -5,6 +5,7 @@ Este archivo conserva el contexto y las decisiones del proyecto. La referencia i
 ## Forma de trabajo
 
 - Resolver el challenge con Ruby y Rack, sin Rails.
+- Usar Ruby `3.4.10` como versión objetivo.
 - Trabajar con TDD usando Minitest de la biblioteca estándar de Ruby.
 - Avanzar en ciclos pequeños: test mínimo, implementación mínima y refactor solo si hace falta.
 - Mantener métodos cortos y responsabilidades separadas.

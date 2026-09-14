@@ -4,6 +4,8 @@
 
 Resolver el challenge de Fudo con una aplicación Ruby + Rack, sin Rails, manteniendo una implementación pequeña y fácil de entender.
 
+La versión objetivo de Ruby es `3.4.10`.
+
 ## Forma de trabajo
 
 - Trabajar con ciclos cortos de TDD: test mínimo, implementación mínima y refactor solo cuando sea necesario.
