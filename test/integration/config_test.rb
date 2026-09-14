@@ -3,6 +3,21 @@ require "rack"
 require_relative "../test_helper"
 
 class ConfigTest < Minitest::Test
+  def test_authors_file_is_public_and_cached_for_one_day
+    ENV["AUTH_USERNAME"] = "admin"
+    ENV["AUTH_PASSWORD"] = "secret"
+    app, = Rack::Builder.parse_file("config.ru")
+    env = Rack::MockRequest.env_for("/AUTHORS", method: "GET")
+
+    status, headers, body = app.call(env)
+    content = +""
+    body.each { |chunk| content << chunk }
+
+    assert_equal 200, status
+    assert_equal "public, max-age=86400", headers["cache-control"]
+    assert_equal "Gastón Ramos\n", content.force_encoding("UTF-8")
+  end
+
   def test_openapi_file_is_public_and_not_cached
     ENV["AUTH_USERNAME"] = "admin"
     ENV["AUTH_PASSWORD"] = "secret"
