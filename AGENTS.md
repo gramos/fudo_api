@@ -22,7 +22,7 @@ La versión objetivo de Ruby es `3.4.10`.
 - Separar responsabilidades sin crear abstracciones prematuras.
 - Usar nombres claros y estructuras directas.
 - Evitar dependencias innecesarias.
-- Conservar las decisiones registradas en `CONTEXTO.md` y actualizarlas cuando cambien.
+- Mantener la documentación necesaria en los archivos que forman parte del entregable.
 
 ## Alcance técnico acordado inicialmente
 
