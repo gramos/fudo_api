@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.10"
+          bundler-cache: true
+
+      - name: Run tests
+        run: ruby -Itest -e 'Dir["test/**/*_test.rb"].sort.each { |file| require File.expand_path(file) }'
+
+      - name: Build Docker image
+        run: docker build -t fudo-api .
+
+      - name: Run Docker smoke tests
+        run: |
+          set -euo pipefail
+
+          docker run -d \
+            --name fudo-api-ci \
+            -e AUTH_USERNAME=admin \
+            -e AUTH_PASSWORD=secret \
+            -p 9292:9292 \
+            fudo-api
+
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:9292/openapi.yaml > /dev/null; then
+              break
+            fi
+
+            sleep 1
+          done
+
+          curl --fail --silent http://127.0.0.1:9292/openapi.yaml > /dev/null
+
+          token=$(curl --fail --silent \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"username":"admin","password":"secret"}' \
+            http://127.0.0.1:9292/auth \
+            | ruby -rjson -e 'puts JSON.parse(STDIN.read)["token"]')
+
+          curl --fail --silent \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${token}" \
+            -d '{"name":"Pizza"}' \
+            http://127.0.0.1:9292/products > /dev/null
+
+      - name: Stop Docker container
+        if: always()
+        run: docker rm --force fudo-api-ci
