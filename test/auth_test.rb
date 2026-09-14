@@ -17,4 +17,20 @@ class AuthTest < Minitest::Test
 
     assert_equal "admin", auth.validate(token)
   end
+
+  def test_invalid_password_does_not_return_a_token
+    auth = Auth.new(username: "admin", password: "secret")
+
+    token = auth.authenticate("admin", "wrong")
+
+    assert_nil token
+  end
+
+  def test_invalid_username_does_not_return_a_token
+    auth = Auth.new(username: "admin", password: "secret")
+
+    token = auth.authenticate("guest", "secret")
+
+    assert_nil token
+  end
 end
