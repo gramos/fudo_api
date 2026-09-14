@@ -38,7 +38,7 @@ class App
   def create_product(env)
     data = JSON.parse(env["rack.input"].read)
     name = data["name"]
-    return json_response(400, error: "Name is required") unless name.is_a?(String) && !name.strip.empty?
+    return json_response(400, error: "Name is required") unless valid_name?(name)
 
     product = {
       id: SecureRandom.uuid,
@@ -55,6 +55,10 @@ class App
 
   def list_products(_env)
     json_response(200, @products.values)
+  end
+
+  def valid_name?(name)
+    name.is_a?(String) && !name.strip.empty?
   end
 
   def not_found(_env)
