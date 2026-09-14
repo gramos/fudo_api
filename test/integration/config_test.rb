@@ -1,6 +1,6 @@
 require "json"
 require "rack"
-require_relative "test_helper"
+require_relative "../test_helper"
 
 class ConfigTest < Minitest::Test
   def test_authentication_works_through_the_rack_stack
