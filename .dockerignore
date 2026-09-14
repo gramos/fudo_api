@@ -1,0 +1,6 @@
+.git
+.bundle
+test
+*.md
+AGENTS.md
+Dockerfile
