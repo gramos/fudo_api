@@ -93,7 +93,10 @@ GET /products
 
 - `README.md` contiene la consigna del challenge.
 - `AGENTS.md` contiene las reglas permanentes de trabajo.
-- Todavía no hay código ni tests en `fudo_api`.
+- `test/test_helper.rb` configura Minitest.
+- `test/auth_test.rb` verifica que credenciales válidas devuelvan un token y que el token identifique al usuario.
+- `auth.rb` contiene la implementación mínima inicial de `Auth`, incluyendo almacenamiento y validación de tokens.
+- Los dos tests de `Auth` están en verde usando Ruby `3.4.10`.
 - Todavía faltan `fudo.md`, `tcp.md`, `http.md`, `openapi.yaml` y `AUTHORS`.
 - Todavía faltan las instrucciones para levantar el proyecto en `README.md`.
 - El código existente en `prototype` se conservará como referencia, no como implementación final.
