@@ -39,4 +39,19 @@ class AuthTest < Minitest::Test
 
     assert_nil auth.validate("unknown-token")
   end
+
+  def test_expired_token_is_not_valid
+    auth = Auth.new(username: "admin", password: "secret")
+    issued_at = Time.now
+
+    token = Time.stub(:now, issued_at) do
+      auth.authenticate("admin", "secret")
+    end
+
+    result = Time.stub(:now, issued_at + 3601) do
+      auth.validate(token)
+    end
+
+    assert_nil result
+  end
 end
