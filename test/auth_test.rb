@@ -10,4 +10,11 @@ class AuthTest < Minitest::Test
     refute_nil token
     refute_empty token
   end
+
+  def test_generated_token_identifies_the_user
+    auth = Auth.new(username: "admin", password: "secret")
+    token = auth.authenticate("admin", "secret")
+
+    assert_equal "admin", auth.validate(token)
+  end
 end
