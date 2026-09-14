@@ -22,12 +22,14 @@ class App
     send(action, env)
   rescue JSON::ParserError
     json_response(400, error: "Invalid JSON")
+  rescue ArgumentError
+    json_response(400, error: "JSON object expected")
   end
 
   private
 
   def authenticate(env)
-    data = JSON.parse(env["rack.input"].read)
+    data = read_json(env)
     token = @auth.authenticate(data["username"], data["password"])
 
     return json_response(401, error: "Invalid credentials") unless token
@@ -36,7 +38,7 @@ class App
   end
 
   def create_product(env)
-    data = JSON.parse(env["rack.input"].read)
+    data = read_json(env)
     name = data["name"]
     return json_response(400, error: "Name is required") unless valid_name?(name)
 
@@ -59,6 +61,13 @@ class App
 
   def valid_name?(name)
     name.is_a?(String) && !name.strip.empty?
+  end
+
+  def read_json(env)
+    data = JSON.parse(env["rack.input"].read)
+    raise ArgumentError unless data.is_a?(Hash)
+
+    data
   end
 
   def not_found(_env)

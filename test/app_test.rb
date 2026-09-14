@@ -95,6 +95,37 @@ class AppTest < Minitest::Test
     assert_equal({ "error" => "Name is required" }, JSON.parse(body.join))
   end
 
+  def test_rejects_product_with_a_non_string_name
+    auth = Auth.new(username: "admin", password: "secret")
+    app = App.new(auth: auth)
+    env = {
+      "REQUEST_METHOD" => "POST",
+      "PATH_INFO" => "/products",
+      "auth.username" => "admin",
+      "rack.input" => StringIO.new(JSON.generate(name: 123))
+    }
+
+    status, _headers, body = app.call(env)
+
+    assert_equal 400, status
+    assert_equal({ "error" => "Name is required" }, JSON.parse(body.join))
+  end
+
+  def test_rejects_json_that_is_not_an_object
+    auth = Auth.new(username: "admin", password: "secret")
+    app = App.new(auth: auth)
+    env = {
+      "REQUEST_METHOD" => "POST",
+      "PATH_INFO" => "/auth",
+      "rack.input" => StringIO.new("[]")
+    }
+
+    status, _headers, body = app.call(env)
+
+    assert_equal 400, status
+    assert_equal({ "error" => "JSON object expected" }, JSON.parse(body.join))
+  end
+
   def test_authenticates_valid_credentials
     auth = Auth.new(username: "admin", password: "secret")
     app = App.new(auth: auth)
