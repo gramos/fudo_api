@@ -37,9 +37,12 @@ class App
 
   def create_product(env)
     data = JSON.parse(env["rack.input"].read)
+    name = data["name"]
+    return json_response(400, error: "Name is required") unless name.is_a?(String) && !name.strip.empty?
+
     product = {
       id: SecureRandom.uuid,
-      name: data["name"]
+      name: name
     }
 
     Thread.new do
