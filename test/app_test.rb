@@ -42,6 +42,21 @@ class AppTest < Minitest::Test
     assert_equal({ "error" => "Invalid credentials" }, JSON.parse(body.join))
   end
 
+  def test_rejects_invalid_json
+    auth = Auth.new(username: "admin", password: "secret")
+    app = App.new(auth: auth)
+    env = {
+      "REQUEST_METHOD" => "POST",
+      "PATH_INFO" => "/auth",
+      "rack.input" => StringIO.new("not-json")
+    }
+
+    status, _headers, body = app.call(env)
+
+    assert_equal 400, status
+    assert_equal({ "error" => "Invalid JSON" }, JSON.parse(body.join))
+  end
+
   def test_unknown_route_returns_not_found
     app = App.new(auth: Auth.new(username: "admin", password: "secret"))
     env = {

@@ -97,9 +97,9 @@ GET /products
 - `test/auth_test.rb` verifica credenciales válidas, identificación mediante token y rechazo de credenciales o tokens inválidos.
 - `auth.rb` contiene la implementación mínima inicial de `Auth`, incluyendo almacenamiento, validación y expiración de tokens después de una hora.
 - Los seis tests de `Auth` están en verde usando Ruby `3.4.10`.
-- `test/app_test.rb` verifica `POST /auth` con credenciales válidas e inválidas y que una ruta inexistente responda `404` en JSON.
-- `app.rb` contiene el routing inicial, el login y la respuesta `404`.
-- Los tres tests de `App` y los seis tests de `Auth` están en verde.
+- `test/app_test.rb` verifica `POST /auth` con credenciales válidas, inválidas y JSON inválido, además de rutas inexistentes.
+- `app.rb` contiene el routing inicial, el login, el manejo de JSON inválido y la respuesta `404`.
+- Los cuatro tests de `App` y los seis tests de `Auth` están en verde.
 - Todavía faltan `fudo.md`, `tcp.md`, `http.md`, `openapi.yaml` y `AUTHORS`.
 - Todavía faltan las instrucciones para levantar el proyecto en `README.md`.
 - El código existente en `prototype` se conservará como referencia, no como implementación final.

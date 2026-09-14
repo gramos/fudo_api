@@ -16,6 +16,8 @@ class App
     )
 
     send(action, env)
+  rescue JSON::ParserError
+    json_response(400, error: "Invalid JSON")
   end
 
   private
