@@ -24,6 +24,29 @@ class AppTest < Minitest::Test
     assert_equal "pending", response["status"]
   end
 
+  def test_created_product_is_not_available_immediately
+    auth = Auth.new(username: "admin", password: "secret")
+    app = App.new(auth: auth)
+    create_env = {
+      "REQUEST_METHOD" => "POST",
+      "PATH_INFO" => "/products",
+      "auth.username" => "admin",
+      "rack.input" => StringIO.new(JSON.generate(name: "Pizza"))
+    }
+    list_env = {
+      "REQUEST_METHOD" => "GET",
+      "PATH_INFO" => "/products",
+      "auth.username" => "admin",
+      "rack.input" => StringIO.new
+    }
+
+    app.call(create_env)
+    status, _headers, body = app.call(list_env)
+
+    assert_equal 200, status
+    assert_equal [], JSON.parse(body.join)
+  end
+
   def test_authenticates_valid_credentials
     auth = Auth.new(username: "admin", password: "secret")
     app = App.new(auth: auth)

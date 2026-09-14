@@ -4,11 +4,13 @@ require "securerandom"
 class App
   ROUTES = {
     ["POST", "/auth"] => :authenticate,
-    ["POST", "/products"] => :create_product
+    ["POST", "/products"] => :create_product,
+    ["GET", "/products"] => :list_products
   }.freeze
 
   def initialize(auth:)
     @auth = auth
+    @products = {}
   end
 
   def call(env)
@@ -38,6 +40,10 @@ class App
     product_id = SecureRandom.uuid
 
     json_response(202, id: product_id, name: data["name"], status: "pending")
+  end
+
+  def list_products(_env)
+    json_response(200, @products.values)
   end
 
   def not_found(_env)
