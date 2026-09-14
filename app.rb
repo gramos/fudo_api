@@ -37,7 +37,7 @@ class App
     data = JSON.parse(env["rack.input"].read)
     product_id = SecureRandom.uuid
 
-    json_response(202, id: product_id, status: "pending")
+    json_response(202, id: product_id, name: data["name"], status: "pending")
   end
 
   def not_found(_env)

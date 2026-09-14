@@ -20,6 +20,7 @@ class AppTest < Minitest::Test
 
     assert_equal 202, status
     refute_empty response["id"]
+    assert_equal "Pizza", response["name"]
     assert_equal "pending", response["status"]
   end
 
