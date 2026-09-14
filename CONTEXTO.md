@@ -28,6 +28,57 @@ Este archivo conserva el contexto y las decisiones del proyecto. La referencia i
 12. `openapi.yaml` se servirá desde la raíz con `Cache-Control: no-store`.
 13. `AUTHORS` se servirá desde la raíz con `Cache-Control: public, max-age=86400`.
 
+## Arquitectura prevista
+
+La aplicación tendrá una aplicación Rack principal y una cadena pequeña de middlewares:
+
+```text
+Servidor Rack
+    ↓
+Rack::Deflater
+    ↓
+Rack::Static
+    ↓
+AuthMiddleware
+    ↓
+App
+```
+
+`Rack::Deflater` se ocupará de comprimir las respuestas cuando el cliente anuncie que acepta gzip. `Rack::Static` servirá públicamente `AUTHORS` y `openapi.yaml`. `AuthMiddleware` validará el token Bearer únicamente para `/products` y sus subrutas. `App` resolverá las rutas y manejará las respuestas HTTP.
+
+### Responsabilidades
+
+- `app.rb`: aplicación Rack principal, routing, login, creación y consulta de productos, lectura de JSON y respuestas JSON.
+- `auth.rb`: validación de credenciales, generación de tokens y validación de sesiones.
+- `auth_middleware.rb`: extracción del token Bearer y protección de las rutas de productos.
+- `config.ru`: composición de la aplicación y configuración de los middlewares.
+- `test/`: tests unitarios y de integración con Minitest.
+- `public/`: archivos estáticos `AUTHORS` y `openapi.yaml`.
+
+El middleware de compresión será el provisto por Rack; no se implementará un middleware gzip propio. La autenticación será pública en `POST /auth`, mientras que la creación y consulta de productos requerirán autenticación.
+
+### Flujo de endpoints
+
+```text
+POST /auth
+→ Rack::Deflater
+→ Rack::Static
+→ AuthMiddleware deja pasar la ruta pública
+→ App procesa el login mediante Auth
+
+POST /products
+→ Rack::Deflater
+→ Rack::Static
+→ AuthMiddleware valida el token
+→ App valida el producto y programa su creación
+
+GET /products
+→ Rack::Deflater
+→ Rack::Static
+→ AuthMiddleware valida el token
+→ App devuelve los productos disponibles
+```
+
 ## Decisiones que deben revisarse
 
 - La implementación final del middleware de autenticación.
@@ -45,6 +96,26 @@ Este archivo conserva el contexto y las decisiones del proyecto. La referencia i
 - Todavía faltan `fudo.md`, `tcp.md`, `http.md`, `openapi.yaml` y `AUTHORS`.
 - Todavía faltan las instrucciones para levantar el proyecto en `README.md`.
 - El código existente en `prototype` se conservará como referencia, no como implementación final.
+
+## Checklist de la consigna
+
+- [ ] API JSON implementada con Rack y sin Rails.
+- [ ] Endpoint `POST /auth` que reciba usuario y contraseña.
+- [ ] Endpoint `POST /products` protegido y asíncrono.
+- [ ] Respuesta inmediata `202 Accepted` para la creación.
+- [ ] Producto disponible después de cinco segundos.
+- [ ] Endpoint `GET /products` protegido.
+- [ ] Respuestas comprimidas con gzip cuando el cliente lo solicite.
+- [ ] `openapi.yaml` expuesto en la raíz y con `Cache-Control: no-store`.
+- [ ] `AUTHORS` expuesto en la raíz y cacheado durante 24 horas.
+- [ ] Productos con atributos `id` y `name`.
+- [ ] `fudo.md` de hasta 100 palabras y 2 o 3 párrafos.
+- [ ] `tcp.md` de hasta 50 palabras.
+- [ ] `http.md` de hasta 50 palabras.
+- [ ] Instrucciones para levantar el proyecto en `README.md`.
+- [ ] Tests automatizados con Minitest.
+- [ ] Docker, solo si se decide agregarlo; es opcional.
+- [ ] Revisión final y publicación en un repositorio git.
 
 ## Orden previsto de implementación
 
