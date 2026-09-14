@@ -2,6 +2,9 @@ GEM
   remote: https://rubygems.org/
   specs:
     rack (3.2.7)
+    rackup (2.3.1)
+      rack (>= 3)
+    webrick (1.9.2)
 
 PLATFORMS
   ruby
@@ -9,6 +12,8 @@ PLATFORMS
 
 DEPENDENCIES
   rack
+  rackup
+  webrick
 
 RUBY VERSION
    ruby 3.4.10p104
