@@ -3,6 +3,24 @@ require "rack"
 require_relative "../test_helper"
 
 class ConfigTest < Minitest::Test
+  def test_authentication_response_is_compressed_when_requested
+    ENV["AUTH_USERNAME"] = "admin"
+    ENV["AUTH_PASSWORD"] = "secret"
+    app, = Rack::Builder.parse_file("config.ru")
+    env = Rack::MockRequest.env_for(
+      "/auth",
+      method: "POST",
+      input: JSON.generate(username: "admin", password: "secret"),
+      "CONTENT_TYPE" => "application/json",
+      "HTTP_ACCEPT_ENCODING" => "gzip"
+    )
+
+    _status, headers, _body = app.call(env)
+
+    assert_equal "gzip", headers["content-encoding"]
+    assert_equal "Accept-Encoding", headers["vary"]
+  end
+
   def test_created_product_is_available_after_five_seconds
     ENV["AUTH_USERNAME"] = "admin"
     ENV["AUTH_PASSWORD"] = "secret"
