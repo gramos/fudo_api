@@ -33,6 +33,20 @@ class ConfigTest < Minitest::Test
     refute_empty content
   end
 
+  def test_openapi_file_documents_the_main_endpoints
+    ENV["AUTH_USERNAME"] = "admin"
+    ENV["AUTH_PASSWORD"] = "secret"
+    app, = Rack::Builder.parse_file("config.ru")
+    env = Rack::MockRequest.env_for("/openapi.yaml", method: "GET")
+
+    _status, _headers, body = app.call(env)
+    content = +""
+    body.each { |chunk| content << chunk }
+
+    assert_includes content, "/auth"
+    assert_includes content, "/products"
+  end
+
   def test_authentication_response_is_compressed_when_requested
     ENV["AUTH_USERNAME"] = "admin"
     ENV["AUTH_PASSWORD"] = "secret"
