@@ -1,5 +1,5 @@
 # fudo_api
-[![CI](https://github.com/gramos/fudo_api/actions/workflows/ci.yml/badge.svg)](https://github.com/gramos/fudo_api/actions/workflows/ci.yml)
+[![CI](https://github.com/gramos/fudo_api/actions/workflows/ci.yml/badge.svg)](https://github.com/gramos/fudo_api/actions/workflows/ci.yml) ![Ruby](https://img.shields.io/badge/Ruby-3.4.10-red?logo=ruby)
 # Technical Challenge - Backend Developer Sr.
 
 1. Explicar en un archivo llamado fudo.md qué es lo que es Fudo, en sólo 2 o 3 párrafos, en no más de 100 palabras.
