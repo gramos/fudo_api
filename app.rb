@@ -1,8 +1,10 @@
 require "json"
+require "securerandom"
 
 class App
   ROUTES = {
-    ["POST", "/auth"] => :authenticate
+    ["POST", "/auth"] => :authenticate,
+    ["POST", "/products"] => :create_product
   }.freeze
 
   def initialize(auth:)
@@ -29,6 +31,13 @@ class App
     return json_response(401, error: "Invalid credentials") unless token
 
     json_response(200, token: token, token_type: "Bearer")
+  end
+
+  def create_product(env)
+    data = JSON.parse(env["rack.input"].read)
+    product_id = SecureRandom.uuid
+
+    json_response(202, id: product_id, status: "pending")
   end
 
   def not_found(_env)

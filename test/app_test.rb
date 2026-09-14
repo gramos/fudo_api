@@ -5,6 +5,24 @@ require_relative "../auth"
 require_relative "../app"
 
 class AppTest < Minitest::Test
+  def test_creates_a_product_asynchronously
+    auth = Auth.new(username: "admin", password: "secret")
+    app = App.new(auth: auth)
+    env = {
+      "REQUEST_METHOD" => "POST",
+      "PATH_INFO" => "/products",
+      "auth.username" => "admin",
+      "rack.input" => StringIO.new(JSON.generate(name: "Pizza"))
+    }
+
+    status, _headers, body = app.call(env)
+    response = JSON.parse(body.join)
+
+    assert_equal 202, status
+    refute_empty response["id"]
+    assert_equal "pending", response["status"]
+  end
+
   def test_authenticates_valid_credentials
     auth = Auth.new(username: "admin", password: "secret")
     app = App.new(auth: auth)
