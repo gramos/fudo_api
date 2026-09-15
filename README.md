@@ -27,12 +27,16 @@ curl -X POST http://localhost:9292/products \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $TOKEN" \
   -d '{"name":"Pizza"}'
+```
 
+El producto creado estará disponible en el listado después de cinco segundos. Para listar los productos:
+
+```sh
 curl http://localhost:9292/products \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-El producto creado estará disponible en el listado después de cinco segundos. La especificación OpenAPI está en `/openapi.yaml` y el archivo de autores en `/AUTHORS`.
+La especificación OpenAPI está en `/openapi.yaml` y el archivo de autores en `/AUTHORS`.
 
 ### Ejecutar con Docker
 
