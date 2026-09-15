@@ -32,8 +32,7 @@ curl -X POST http://localhost:9292/products \
 El producto creado estará disponible en el listado después de cinco segundos. Para listar los productos:
 
 ```sh
-curl http://localhost:9292/products \
-  -H "Authorization: Bearer $TOKEN"
+curl http://localhost:9292/products -H "Authorization: Bearer $TOKEN"
 ```
 
 La especificación OpenAPI está en `/openapi.yaml` y el archivo de autores en `/AUTHORS`.
