@@ -1,5 +1,53 @@
 # fudo_api
 [![CI](https://github.com/gramos/fudo_api/actions/workflows/ci.yml/badge.svg)](https://github.com/gramos/fudo_api/actions/workflows/ci.yml) ![Ruby](https://img.shields.io/badge/Ruby-3.4.10-lightgrey?logo=ruby)
+
+## Cómo ejecutar la aplicación
+
+Se requiere Ruby 3.4.10 y Bundler.
+
+```sh
+bundle install
+AUTH_USERNAME=admin AUTH_PASSWORD=secret bundle exec rackup
+```
+
+El servidor queda disponible en `http://localhost:9292`. Para obtener un token, enviá tus credenciales:
+
+```sh
+curl -X POST http://localhost:9292/auth \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"secret"}'
+```
+
+Usá el token recibido para crear o listar productos:
+
+```sh
+curl -X POST http://localhost:9292/products \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer TOKEN' \
+  -d '{"name":"Pizza"}'
+
+curl http://localhost:9292/products \
+  -H 'Authorization: Bearer TOKEN'
+```
+
+El producto creado estará disponible en el listado después de cinco segundos. La especificación OpenAPI está en `/openapi.yaml` y el archivo de autores en `/AUTHORS`.
+
+### Ejecutar con Docker
+
+```sh
+docker build -t fudo-api .
+docker run --rm -p 9292:9292 \
+  -e AUTH_USERNAME=admin \
+  -e AUTH_PASSWORD=secret \
+  fudo-api
+```
+
+### Ejecutar los tests
+
+```sh
+bundle exec ruby -Itest -e 'Dir["test/**/*_test.rb"].sort.each { |file| require File.expand_path(file) }'
+```
+
 # Technical Challenge - Backend Developer Sr.
 
 1. Explicar en un archivo llamado fudo.md qué es lo que es Fudo, en sólo 2 o 3 párrafos, en no más de 100 palabras.
