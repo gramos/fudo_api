@@ -1,3 +1,5 @@
+require "bundler/setup"
+
 slow_test = "test_created_product_is_available_after_five_seconds"
 
 case ARGV.shift
