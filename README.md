@@ -45,7 +45,19 @@ docker run --rm -p 9292:9292 \
 ### Ejecutar los tests
 
 ```sh
-bundle exec ruby -Itest -e 'Dir["test/**/*_test.rb"].sort.each { |file| require File.expand_path(file) }'
+bundle exec ruby test/run.rb
+```
+
+Por defecto se omite el test que espera cinco segundos. Para ejecutarlo solo:
+
+```sh
+bundle exec ruby test/run.rb --slow
+```
+
+Para ejecutar toda la suite, incluido el test lento (como en el CI):
+
+```sh
+bundle exec ruby test/run.rb --all
 ```
 
 # Technical Challenge - Backend Developer Sr.

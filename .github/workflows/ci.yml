@@ -22,7 +22,7 @@ jobs:
           bundler-cache: true
 
       - name: Run tests
-        run: bundle exec ruby -Itest -e 'Dir["test/**/*_test.rb"].sort.each { |file| require File.expand_path(file) }'
+        run: bundle exec ruby test/run.rb --all
 
       - name: Build Docker image
         run: docker build -t fudo-api .
