@@ -10,24 +10,26 @@ bundle install
 AUTH_USERNAME=admin AUTH_PASSWORD=secret bundle exec rackup
 ```
 
-El servidor queda disponible en `http://localhost:9292`. Para obtener un token, enviá tus credenciales:
+El servidor queda disponible en `http://localhost:9292`. En otra terminal, obtené y guardá el token en la variable `TOKEN`:
 
 ```sh
-curl -X POST http://localhost:9292/auth \
+export TOKEN="$(curl --fail --silent --show-error \
+  -X POST http://localhost:9292/auth \
   -H 'Content-Type: application/json' \
-  -d '{"username":"admin","password":"secret"}'
+  -d '{"username":"admin","password":"secret"}' \
+  | ruby -rjson -e 'puts JSON.parse(STDIN.read).fetch("token")')"
 ```
 
-Usá el token recibido para crear o listar productos:
+Usá esa variable para crear o listar productos:
 
 ```sh
 curl -X POST http://localhost:9292/products \
   -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer TOKEN' \
+  -H "Authorization: Bearer $TOKEN" \
   -d '{"name":"Pizza"}'
 
 curl http://localhost:9292/products \
-  -H 'Authorization: Bearer TOKEN'
+  -H "Authorization: Bearer $TOKEN"
 ```
 
 El producto creado estará disponible en el listado después de cinco segundos. La especificación OpenAPI está en `/openapi.yaml` y el archivo de autores en `/AUTHORS`.
